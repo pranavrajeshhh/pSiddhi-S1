@@ -1,0 +1,117 @@
+{
+    "title": "pSiddhi - s1",
+    "cols": [
+        {
+            "title": "To-Do",
+            "tasks": [
+                {
+                    "text": "Get Gemini + Groq API keys and test AI explanations",
+                    "id": "todo-api-keys"
+                },
+                {
+                    "text": "Post-midterm: Alert History + Root Cause Summary dashboard views",
+                    "id": "todo-post-mid-dash"
+                },
+                {
+                    "text": "Post-midterm: False positive tuning + threshold refinement",
+                    "id": "todo-post-mid-tuning"
+                },
+                {
+                    "text": "Post-midterm: Full QA validation suite + Moodle upload",
+                    "id": "todo-post-mid-qa"
+                },
+                {
+                    "text": "Post-midterm: Final demo preparation + documentation",
+                    "id": "todo-post-mid-docs"
+                }
+            ],
+            "id": "v0luyd8wsbdwfehu49ywu6ev",
+            "color": "#fcb900"
+        },
+        {
+            "title": "On-Progress",
+            "tasks": [
+                {
+                    "text": "Add sample CSV as DAG data source",
+                    "id": "todo-csv-source"
+                },
+                {
+                    "text": "Restart Docker with updated Grafana dashboards",
+                    "id": "todo-grafana-restart"
+                }
+            ],
+            "id": "pm0v3vvs3jr7owapfig6hfjq",
+            "color": "#0693e3"
+        },
+        {
+            "title": "Closed",
+            "tasks": [
+                {
+                    "text": "Setup - WSL2, Ubuntu, Docker Engine installed",
+                    "id": "wgbv68r3fwwli24vx8en2vp2"
+                },
+                {
+                    "text": "Created 2 Airflow DAGs, Prometheus exporter, Grafana, Docker Compose — everything running",
+                    "id": "c1s4ivz8zgxa0wuzz3zubonw"
+                },
+                {
+                    "text": "Prometheus receiving all 6 ETL metrics from both pipelines",
+                    "id": "done-prometheus"
+                },
+                {
+                    "text": "Grafana connected to Prometheus — first dashboard created",
+                    "id": "done-grafana"
+                },
+                {
+                    "text": "SQLite database collecting job run data from both DAGs",
+                    "id": "done-sqlite"
+                },
+                {
+                    "text": "Baseline data generator script built (ml/generate_baseline.py)",
+                    "id": "done-baseline-gen"
+                },
+                {
+                    "text": "ML training script built — Isolation Forest + LOF + MLflow (ml/train.py)",
+                    "id": "done-train"
+                },
+                {
+                    "text": "Anomaly detection scoring script built (ml/detect.py)",
+                    "id": "done-detect"
+                },
+                {
+                    "text": "AI explanation engine built — Gemini + Groq + fallback (ml/explain.py)",
+                    "id": "done-explain"
+                },
+                {
+                    "text": "Grafana dashboards provisioned — Job Run Trends + Anomaly Timeline (2 views)",
+                    "id": "done-grafana-dashboards"
+                },
+                {
+                    "text": "Smoke tests + unit tests written (tests/test_smoke.py)",
+                    "id": "done-tests"
+                },
+                {
+                    "text": "ML training run — Isolation Forest + LOF trained on 318/315 baseline samples (mlflow.db)",
+                    "id": "done-train-run"
+                },
+                {
+                    "text": "Anomaly detection run — 1 anomaly detected + classified (ml/detect.py)",
+                    "id": "done-detect-run"
+                },
+                {
+                    "text": "AI explanation generated via fallback template (ml/explain.py)",
+                    "id": "done-explain-run"
+                },
+                {
+                    "text": "Pytest smoke tests — 17 passed, 1 skipped (prometheus skip expected in Windows)",
+                    "id": "done-tests-run"
+                }
+            ],
+            "id": "y0uyzs8ztj3kdj16ofqvia8d",
+            "color": "#00d084"
+        }
+    ],
+    "autosave": true,
+    "saveToFile": true,
+    "timestamp": 1783937149358
+}

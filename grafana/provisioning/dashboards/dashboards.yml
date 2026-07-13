@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'etl-dashboards'
+    orgId: 1
+    folder: 'ETL Monitoring'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    options:
+      path: /etc/grafana/provisioning/dashboards
