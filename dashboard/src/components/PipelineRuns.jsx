@@ -1,9 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+
+const COLS = [
+  { key: 'id',                    label: '#',           numeric: true  },
+  { key: 'pipeline_name',         label: 'Pipeline',    numeric: false },
+  { key: 'stage',                 label: 'Stage',       numeric: false },
+  { key: 'duration_seconds',      label: 'Duration (s)',numeric: true  },
+  { key: 'rows_ingested',         label: 'Rows In',     numeric: true  },
+  { key: 'rows_output',           label: 'Rows Out',    numeric: true  },
+  { key: 'data_volume_mb',        label: 'Volume (MB)', numeric: true  },
+  { key: 'status',                label: 'Status',      numeric: false },
+  { key: 'is_anomaly',            label: 'Anomaly',     numeric: false },
+]
 
 export default function PipelineRuns() {
-  const [runs, setRuns] = useState(null)
-  const [pipeline, setPipeline] = useState('all')
+  const [runs, setRuns]               = useState(null)
+  const [search, setSearch]           = useState('')
   const [anomalyFilter, setAnomalyFilter] = useState('all')
+  const [sortKey, setSortKey]         = useState('id')
+  const [sortDir, setSortDir]         = useState('desc')
 
   useEffect(() => {
     fetch('/api/job-runs')
@@ -12,32 +26,62 @@ export default function PipelineRuns() {
       .catch(() => {})
   }, [])
 
-  if (!runs) return <div className="loading">Loading pipeline runs...</div>
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
 
-  let filtered = runs
-  if (pipeline !== 'all') filtered = filtered.filter(r => r.pipeline_name.includes(pipeline))
-  if (anomalyFilter === 'anomaly') filtered = filtered.filter(r => r.is_anomaly)
-  if (anomalyFilter === 'normal') filtered = filtered.filter(r => !r.is_anomaly)
+  const filtered = useMemo(() => {
+    if (!runs) return []
+    let rows = runs
+    if (search.trim()) {
+      rows = rows.filter(r => String(r.id) === search.trim())
+    }
+    if (anomalyFilter === 'anomaly') rows = rows.filter(r => r.is_anomaly)
+    if (anomalyFilter === 'normal')  rows = rows.filter(r => !r.is_anomaly)
+
+    return [...rows].sort((a, b) => {
+      const av = a[sortKey] ?? ''
+      const bv = b[sortKey] ?? ''
+      let cmp = 0
+      if (typeof av === 'number' && typeof bv === 'number') {
+        cmp = av - bv
+      } else {
+        cmp = String(av).localeCompare(String(bv))
+      }
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [runs, search, anomalyFilter, sortKey, sortDir])
+
+  if (!runs) return <div className="loading">Loading pipeline runs...</div>
 
   const anomalyCount = runs.filter(r => r.is_anomaly).length
 
+  const SortIcon = ({ col }) => {
+    if (sortKey !== col) return <span style={{ color: '#CBD5E1', marginLeft: '0.2rem', fontSize: '0.65rem' }}>⇅</span>
+    return <span style={{ color: '#1E3A5F', marginLeft: '0.2rem', fontSize: '0.65rem' }}>{sortDir === 'asc' ? '▲' : '▼'}</span>
+  }
+
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div className="section-title" style={{ margin: 0 }}>Pipeline Runs</div>
-          <span className="badge badge-anomaly">{anomalyCount} anomalies</span>
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <select
-            value={pipeline}
-            onChange={e => setPipeline(e.target.value)}
-            style={{ fontSize: '0.8rem', padding: '0.35rem 0.625rem', border: '1px solid #E2E8F0', borderRadius: '0.375rem', color: '#374151' }}
-          >
-            <option value="all">All Pipelines</option>
-            <option value="batch">Batch Ingestion</option>
-            <option value="transformation">Transformation</option>
-          </select>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        <div className="section-title" style={{ margin: 0 }}>Pipeline Runs</div>
+        <span className="badge badge-anomaly">{anomalyCount} anomalies</span>
+        <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{runs.length} total records</span>
+
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            placeholder="Go to run #..."
+            type="number"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ fontSize: '0.8rem', padding: '0.35rem 0.625rem', border: '1px solid #E2E8F0', borderRadius: '0.375rem', color: '#374151', width: '160px' }}
+          />
           <select
             value={anomalyFilter}
             onChange={e => setAnomalyFilter(e.target.value)}
@@ -54,15 +98,15 @@ export default function PipelineRuns() {
         <table>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Pipeline</th>
-              <th>Stage</th>
-              <th>Duration (s)</th>
-              <th>Rows In</th>
-              <th>Rows Out</th>
-              <th>Volume (MB)</th>
-              <th>Status</th>
-              <th>Anomaly</th>
+              {COLS.map(col => (
+                <th
+                  key={col.key}
+                  onClick={() => handleSort(col.key)}
+                  style={{ cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
+                >
+                  {col.label}<SortIcon col={col.key} />
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -82,6 +126,7 @@ export default function PipelineRuns() {
           </tbody>
         </table>
       </div>
+
       <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#94A3B8' }}>
         Showing {filtered.length} of {runs.length} runs
       </div>

@@ -40,7 +40,6 @@ app.get('/api/job-runs', (req, res) => {
            processing_time_seconds, status, is_anomaly, start_time
     FROM job_runs
     ORDER BY id DESC
-    LIMIT 100
   `).all()
   db.close()
   res.json(rows)
@@ -117,19 +116,56 @@ app.get('/api/scores', (req, res) => {
   }
 })
 
-// Run pytest and return output
+const FILE_LABELS = {
+  'test_smoke':            'Smoke Tests',
+  'test_metric_ingestion': 'Metric Ingestion',
+  'test_model_accuracy':   'Model Accuracy',
+  'test_false_positive':   'False Positive Analysis',
+  'test_integration_e2e':  'Integration & E2E',
+  'test_prompt_quality':   'AI Explanation Quality',
+}
+
+function parseTestOutput(raw) {
+  // Strip ANSI escape codes so the regex can find plain PASSED/FAILED/SKIPPED
+  const output = raw.replace(/\x1b\[[0-9;]*m/g, '')
+  const filesMap = {}
+  for (const line of output.split(/\r?\n/)) {
+    const m = line.match(/tests[/\\](\w+)\.py::(?:\w+::)?(\w+)\s+(PASSED|FAILED|SKIPPED|ERROR)/)
+    if (!m) continue
+    const [, fileKey, testFn, status] = m
+    if (!filesMap[fileKey]) filesMap[fileKey] = { file: fileKey, label: FILE_LABELS[fileKey] || fileKey, tests: [] }
+    const label = testFn.replace(/^test_/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    filesMap[fileKey].tests.push({ name: label, status })
+  }
+  const files = Object.keys(FILE_LABELS).filter(k => filesMap[k]).map(k => filesMap[k])
+  const allTests = files.flatMap(f => f.tests)
+  const summary = {
+    passed:  allTests.filter(t => t.status === 'PASSED').length,
+    failed:  allTests.filter(t => t.status === 'FAILED').length,
+    skipped: allTests.filter(t => t.status === 'SKIPPED').length,
+    total:   allTests.length,
+  }
+  return { files, summary }
+}
+
+// Run pytest — optional ?files=test_smoke,test_model_accuracy to run specific categories
 app.get('/api/tests', (req, res) => {
+  let testTarget = 'tests/'
+  if (req.query.files) {
+    const allowed = Object.keys(FILE_LABELS)
+    const valid = req.query.files.split(',').map(f => f.trim()).filter(f => allowed.includes(f))
+    if (valid.length) testTarget = valid.map(f => `tests/${f}.py`).join(' ')
+  }
   try {
     const output = execSync(
-      'python -m pytest tests/ -v --tb=short 2>&1',
+      `python -m pytest ${testTarget} -v --tb=short 2>&1`,
       { cwd: PROJECT_ROOT, timeout: 60000, encoding: 'utf8' }
     )
-    res.json({ success: true, output })
+    res.json({ success: true, structured: parseTestOutput(output), output })
   } catch (err) {
-    res.json({ success: false, output: err.stdout || err.message })
+    const raw = err.stdout || err.message
+    res.json({ success: false, structured: parseTestOutput(raw), output: raw })
   }
 })
 
-app.listen(3001, () => {
-  console.log('API server running on http://localhost:3001')
-})
+app.listen(3001, () => console.log('Server running on port 3001'))
