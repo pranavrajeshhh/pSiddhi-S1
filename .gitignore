@@ -1,4 +1,3 @@
-@"
 __pycache__/
 *.pyc
 logs/
@@ -6,4 +5,4 @@ logs/
 requirements.txt
 SETUP.md
 setup-proof/
-"@ | Out-File -Encoding utf8 .gitignore
+.coverage
