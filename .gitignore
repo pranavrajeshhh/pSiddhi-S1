@@ -6,3 +6,4 @@ requirements.txt
 SETUP.md
 setup-proof/
 .coverage
+venv/

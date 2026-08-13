@@ -55,7 +55,7 @@ body {
 .tab-btn:hover { color: #1E3A5F; }
 .tab-btn.active { color: #1E3A5F; border-bottom-color: #3B82F6; font-weight: 600; }
 
-.content { flex: 1; overflow: auto; padding: 1.5rem; }
+.content { flex: 1; overflow: auto; padding: 1rem 1.25rem; }
 
 .section-title { font-size: 1.0625rem; font-weight: 700; color: #1E3A5F; margin-bottom: 1.25rem; }
 
@@ -160,3 +160,6 @@ tr:hover td { background: #F8FAFC; }
 
 .loading { color: #64748B; font-size: 0.875rem; padding: 2rem; text-align: center; }
 .empty   { color: #94A3B8; font-size: 0.875rem; padding: 2rem; text-align: center; }
+
+.table-compact th { padding: 0.4rem 0.5rem; font-size: 0.62rem; }
+.table-compact td { padding: 0.4rem 0.5rem; font-size: 0.72rem; }

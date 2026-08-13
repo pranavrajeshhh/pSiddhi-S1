@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import pickle
+import random
 import mlflow
 import mlflow.sklearn
 from sklearn.ensemble import IsolationForest
@@ -82,7 +83,6 @@ def train_pipeline(pipeline_name):
     print(f"  Models saved to {MODELS_DIR}")
 
 if __name__ == '__main__':
-    import random
     mlflow.set_experiment("etl_anomaly_detection")
     for pipeline in ['batch_ingestion_01', 'transformation_pipeline_01']:
         train_pipeline(pipeline)
