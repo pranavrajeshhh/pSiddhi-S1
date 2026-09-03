@@ -52,7 +52,7 @@ cp .env.example .env
 ### 2. Start the observability stack (Docker)
 
 ```bash
-docker-compose up -d
+docker compose up -d
 # Starts: Airflow (:8080), Prometheus (:9090), Grafana (:3000), Metrics Exporter (:8000)
 ```
 
@@ -137,7 +137,7 @@ pSiddhi/
 ├── dags/               Airflow DAG definitions
 ├── ml/                 ML training, detection, scoring, explanation
 ├── exporter/           Prometheus metrics exporter
-├── tests/              Pytest test suite (62 tests)
+├── tests/              Pytest test suite (90 tests)
 ├── dashboard/          React frontend + Express API server
 │   ├── src/            React components (7 tabs)
 │   └── server.js       Express API (/api/stats, /api/scores, ...)
