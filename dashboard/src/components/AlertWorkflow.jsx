@@ -83,7 +83,7 @@ export default function AlertWorkflow() {
             fontWeight: 600, fontSize: '0.82rem',
           }}
         >
-          {running ? '⏳ Running alert workflow…' : '🔔 Run Alert Workflow'}
+          {running ? 'Running alert workflow...' : 'Run Alert Workflow'}
         </button>
         {lastRun && (
           <pre style={{

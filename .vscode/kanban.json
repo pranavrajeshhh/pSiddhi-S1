@@ -5,16 +5,8 @@
             "title": "To-Do",
             "tasks": [
                 {
-                    "text": "Alert workflow — anomaly queue + routing (high severity → notification)",
-                    "id": "todo-alert-workflow"
-                },
-                {
-                    "text": "False positive tuning + benchmarking report — IF vs LOF precision/recall comparison",
-                    "id": "todo-fp-tuning"
-                },
-                {
-                    "text": "Final documentation + Moodle submission — full evidence pack",
-                    "id": "todo-final-docs"
+                    "text": "Moodle submission — upload full evidence pack (code + doc + video)",
+                    "id": "todo-moodle"
                 }
             ],
             "id": "v0luyd8wsbdwfehu49ywu6ev",
@@ -24,11 +16,7 @@
             "title": "On-Progress",
             "tasks": [
                 {
-                    "text": "Test coverage: 48% → 80% target — adding mocked unit tests for score_all.py and train_pipeline()",
-                    "id": "prog-coverage"
-                },
-                {
-                    "text": "Power BI dashboard — starting Week 11, 4 views planned",
+                    "text": "Power BI dashboard — import 4 CSVs from data/powerbi_exports/ into Power BI Desktop",
                     "id": "prog-powerbi"
                 }
             ],
@@ -92,59 +80,71 @@
                 },
                 {
                     "text": "Gemini + Groq API keys configured and tested — both working, Groq elevated to primary",
-                    "id": "todo-api-keys"
+                    "id": "done-api-keys"
                 },
                 {
-                    "text": "React dashboard built — 7 tabs: Overview, Pipeline Runs, Anomaly Alerts, Model Scores, Grafana, Airflow, Test Results",
+                    "text": "React dashboard upgraded to 8 tabs — added Alert Workflow tab",
                     "id": "done-dashboard"
                 },
                 {
-                    "text": "Express API server — /api/stats, /api/job-runs, /api/anomalies, /api/scores, /api/tests, /api/explain",
+                    "text": "Express API — /api/alerts/high, /api/alerts/run, /api/benchmark endpoints added",
                     "id": "done-express"
                 },
                 {
-                    "text": "test_ml_units.py added — 49 new unit tests covering detect, explain, generate_baseline, train modules",
+                    "text": "Alert workflow built (ml/alert.py) — high-severity anomalies routed to data/alert_log.json with deduplication",
+                    "id": "done-alert-workflow"
+                },
+                {
+                    "text": "FP tuning + benchmarking built (ml/benchmark.py) — IF vs LOF at 4 contamination levels, precision/recall/F1 report",
+                    "id": "done-benchmark"
+                },
+                {
+                    "text": "Power BI data exports built (ml/export_powerbi.py) — 4 CSVs: anomaly_summary, pipeline_health, severity_trends, weekly_report",
+                    "id": "done-powerbi-export"
+                },
+                {
+                    "text": "Multi-dimension anomaly scenarios (test_anomaly_scenarios.py) — 12 tests: duration spike, volume drop, processing spike, combined",
+                    "id": "done-anomaly-scenarios"
+                },
+                {
+                    "text": "Alert workflow tests (test_alert_workflow.py) — 16 tests: routing, deduplication, log I/O, severity levels",
+                    "id": "done-alert-tests"
+                },
+                {
+                    "text": "Benchmark tests (test_benchmark.py) — 9 tests: precision/recall eval, best contamination finder, validation",
+                    "id": "done-benchmark-tests"
+                },
+                {
+                    "text": "test_ml_units.py — 49 unit tests covering detect, explain, generate_baseline, train modules",
                     "id": "done-ml-units"
                 },
                 {
-                    "text": "90 tests passing (up from 17) — smoke, metric ingestion, model accuracy, FP, integration, prompt quality, ML units",
-                    "id": "done-tests-run"
-                },
-                {
-                    "text": "ml/ coverage: 12% → 48% — detect.py at 82%, generate_baseline.py at 97%",
-                    "id": "done-coverage"
-                },
-                {
-                    "text": "ml/__init__.py + tests/__init__.py + tests/conftest.py added — proper package structure",
+                    "text": "ml/__init__.py + tests/__init__.py + tests/conftest.py — proper package structure",
                     "id": "done-pkg-structure"
                 },
                 {
-                    "text": "Bug fix: import random moved to top of ml/train.py (was inside __main__ block)",
+                    "text": "Bug fix: import random moved to top of ml/train.py",
                     "id": "done-train-fix"
                 },
                 {
-                    "text": "Bug fix: duplicate type attribute removed from PipelineRuns.jsx input element",
+                    "text": "Bug fix: duplicate type attribute removed from PipelineRuns.jsx",
                     "id": "done-jsx-fix"
                 },
                 {
-                    "text": ".env.example added — template for GROQ_API_KEY and GEMINI_API_KEY",
+                    "text": ".env.example added — GROQ_API_KEY and GEMINI_API_KEY template",
                     "id": "done-env-example"
                 },
                 {
-                    "text": "README.md rewritten — full setup guide, architecture overview, deliverables table",
+                    "text": "README.md rewritten — all deliverables D-01 to D-10, test table, setup guide",
                     "id": "done-readme"
                 },
                 {
-                    "text": "Midterm document submitted — 13 pages, 8 evidence blocks, 92% self-assessment, EV-01 to EV-08",
+                    "text": "Midterm document submitted — 13 pages, EV-01 to EV-08, Databricks closure sentence, commit screenshot",
                     "id": "done-midterm"
                 },
                 {
-                    "text": "Databricks approval condition formally closed — local MLflow + scikit-learn delivers equivalent capability at ₹0",
-                    "id": "done-databricks"
-                },
-                {
-                    "text": "Midterm Word doc fixes done — commit history screenshot added + Databricks closure sentence added",
-                    "id": "done-midterm-fixes"
+                    "text": "phase1/react-dashboard merged to main → finalphase branch created for post-midterm work",
+                    "id": "done-branch"
                 }
             ],
             "id": "y0uyzs8ztj3kdj16ofqvia8d",
@@ -153,5 +153,5 @@
     ],
     "autosave": true,
     "saveToFile": true,
-    "timestamp": 1787913327878
+    "timestamp": 1756929600000
 }

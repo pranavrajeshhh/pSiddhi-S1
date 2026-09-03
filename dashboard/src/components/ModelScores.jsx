@@ -67,7 +67,7 @@ export default function ModelScores() {
           disabled={state.loading}
           style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem', background: state.loading ? '#E2E8F0' : '#1E3A5F', color: state.loading ? '#94A3B8' : 'white', border: 'none', borderRadius: '0.375rem', cursor: state.loading ? 'not-allowed' : 'pointer', fontWeight: 600 }}
         >
-          {state.loading ? '⏳ Scoring...' : '↻ Refresh Scores'}
+          {state.loading ? 'Scoring...' : 'Refresh Scores'}
         </button>
 
         <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto', flexWrap: 'wrap' }}>
@@ -162,7 +162,7 @@ export default function ModelScores() {
                   {r.ml_is_anomaly === null
                     ? <span style={{ color: '#94A3B8' }}>no model</span>
                     : r.ml_is_anomaly
-                      ? <span className="badge badge-anomaly">⚠ Anomaly</span>
+                      ? <span className="badge badge-anomaly">Anomaly</span>
                       : <span className="badge badge-success">Normal</span>}
                 </td>
                 <td><SeverityBadge severity={r.ml_severity} /></td>

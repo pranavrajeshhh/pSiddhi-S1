@@ -3,10 +3,10 @@ import { useState } from 'react'
 const API = 'http://localhost:3001'
 
 const EXPORTS = [
-  { file: 'anomaly_summary.csv',   label: 'Anomaly Summary',   desc: 'One row per anomaly — pipeline, stage, severity, IF score, AI explanation', icon: '🚨' },
-  { file: 'pipeline_health.csv',   label: 'Pipeline Health',   desc: 'Daily health score per pipeline — anomaly rate, avg duration, yield rate',  icon: '💚' },
-  { file: 'severity_trends.csv',   label: 'Severity Trends',   desc: 'Weekly severity counts (HIGH / MEDIUM / LOW) per pipeline',                  icon: '📈' },
-  { file: 'weekly_report.csv',     label: 'Weekly Report',     desc: 'KPI summary by week — total runs, anomalies, high-severity, anomaly rate',   icon: '📋' },
+  { file: 'anomaly_summary.csv',   label: 'Anomaly Summary',   desc: 'One row per anomaly — pipeline, stage, severity, IF score, AI explanation' },
+  { file: 'pipeline_health.csv',   label: 'Pipeline Health',   desc: 'Daily health score per pipeline — anomaly rate, avg duration, yield rate'  },
+  { file: 'severity_trends.csv',   label: 'Severity Trends',   desc: 'Weekly severity counts (HIGH / MEDIUM / LOW) per pipeline'                  },
+  { file: 'weekly_report.csv',     label: 'Weekly Report',     desc: 'KPI summary by week — total runs, anomalies, high-severity, anomaly rate'   },
 ]
 
 export default function PowerBIExport() {
@@ -52,7 +52,7 @@ export default function PowerBIExport() {
             fontWeight: 600, fontSize: '0.82rem',
           }}
         >
-          {exporting ? '⏳ Generating…' : exported ? '✅ Re-Generate CSVs' : '⚡ Generate CSVs'}
+          {exporting ? 'Generating...' : exported ? 'Re-Generate CSVs' : 'Generate CSVs'}
         </button>
         {output && (
           <pre style={{ marginTop: '0.75rem', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '0.4rem', padding: '0.6rem', fontSize: '0.7rem', color: '#166534', maxHeight: 100, overflow: 'auto' }}>{output}</pre>
@@ -66,9 +66,8 @@ export default function PowerBIExport() {
       <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '0.625rem', padding: '1rem 1.25rem', marginBottom: '1rem' }}>
         <div style={{ fontWeight: 700, fontSize: '0.82rem', marginBottom: '0.75rem' }}>Step 2 — Download & import into Power BI</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          {EXPORTS.map(({ file, label, desc, icon }) => (
+          {EXPORTS.map(({ file, label, desc }) => (
             <div key={file} style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'white', border: '1px solid #E2E8F0', borderRadius: '0.5rem', padding: '0.65rem 1rem' }}>
-              <span style={{ fontSize: '1.25rem' }}>{icon}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: '0.8rem' }}>{label}</div>
                 <div style={{ fontSize: '0.7rem', color: '#64748B' }}>{desc}</div>
@@ -85,7 +84,7 @@ export default function PowerBIExport() {
                   opacity: exported ? 1 : 0.5,
                 }}
               >
-                ⬇ Download
+                Download
               </a>
             </div>
           ))}

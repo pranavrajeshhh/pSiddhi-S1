@@ -10,15 +10,15 @@ import PowerBIExport from './components/PowerBIExport'
 import './App.css'
 
 const TABS = [
-  { id: 'overview',     label: '📊 Overview' },
-  { id: 'runs',         label: '⚙️ Pipeline Runs' },
-  { id: 'anomalies',    label: '🚨 Anomaly Alerts' },
-  { id: 'modelscores',  label: '🤖 Model Scores' },
-  { id: 'alerts',       label: '🔔 Alert Workflow' },
-  { id: 'powerbi',      label: '📤 Power BI Export' },
-  { id: 'grafana',      label: '📈 Grafana' },
-  { id: 'airflow',      label: '🔁 Airflow' },
-  { id: 'tests',        label: '✅ Test Results' },
+  { id: 'overview',     label: 'Overview' },
+  { id: 'runs',         label: 'Pipeline Runs' },
+  { id: 'anomalies',    label: 'Anomaly Alerts' },
+  { id: 'modelscores',  label: 'Model Scores' },
+  { id: 'alerts',       label: 'Alert Workflow' },
+  { id: 'powerbi',      label: 'Power BI Export' },
+  { id: 'grafana',      label: 'Grafana' },
+  { id: 'airflow',      label: 'Airflow' },
+  { id: 'tests',        label: 'Test Results' },
 ]
 
 export default function App() {

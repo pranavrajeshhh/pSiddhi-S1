@@ -82,7 +82,7 @@ export default function Overview() {
               <tr key={file}>
                 <td><code style={{ fontSize: '0.75rem' }}>{file}</code></td>
                 <td>{activity}</td>
-                <td><span className={`badge badge-${status === 'pass' ? 'success' : 'high'}`}>{status === 'pass' ? '✓ Pass' : '✗ Fail'}</span></td>
+                <td><span className={`badge badge-${status === 'pass' ? 'success' : 'high'}`}>{status === 'pass' ? 'Pass' : 'Fail'}</span></td>
               </tr>
             ))}
           </tbody>

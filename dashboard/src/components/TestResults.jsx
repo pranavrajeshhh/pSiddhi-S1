@@ -8,16 +8,16 @@ const STATUS = {
 }
 
 const CATEGORIES = [
-  { key: 'test_smoke',             label: 'Smoke Tests',            icon: '🔥' },
-  { key: 'test_metric_ingestion',  label: 'Metric Ingestion',       icon: '📊' },
-  { key: 'test_model_accuracy',    label: 'Model Accuracy',         icon: '🤖' },
-  { key: 'test_false_positive',    label: 'False Positive',         icon: '🎯' },
-  { key: 'test_integration_e2e',   label: 'Integration & E2E',      icon: '🔗' },
-  { key: 'test_prompt_quality',    label: 'AI Explanation Quality', icon: '💬' },
-  { key: 'test_ml_units',          label: 'ML Unit Tests',          icon: '🧬' },
-  { key: 'test_alert_workflow',    label: 'Alert Workflow',         icon: '🔔' },
-  { key: 'test_anomaly_scenarios', label: 'Anomaly Scenarios',      icon: '⚡' },
-  { key: 'test_benchmark',         label: 'FP Benchmark',           icon: '📐' },
+  { key: 'test_smoke',             label: 'Smoke Tests'            },
+  { key: 'test_metric_ingestion',  label: 'Metric Ingestion'       },
+  { key: 'test_model_accuracy',    label: 'Model Accuracy'         },
+  { key: 'test_false_positive',    label: 'False Positive'         },
+  { key: 'test_integration_e2e',   label: 'Integration & E2E'      },
+  { key: 'test_prompt_quality',    label: 'AI Explanation Quality' },
+  { key: 'test_ml_units',          label: 'ML Unit Tests'          },
+  { key: 'test_alert_workflow',    label: 'Alert Workflow'         },
+  { key: 'test_anomaly_scenarios', label: 'Anomaly Scenarios'      },
+  { key: 'test_benchmark',         label: 'FP Benchmark'           },
 ]
 
 const FILE_LABELS = Object.fromEntries(CATEGORIES.map(c => [c.key, c.label]))
@@ -129,7 +129,7 @@ export default function TestResults() {
                 fontWeight: on ? 700 : 400,
               }}
             >
-              {c.icon} {c.label}
+              {c.label}
             </button>
           )
         })}
@@ -173,10 +173,10 @@ export default function TestResults() {
             }}
           >
             {running
-              ? '⏳ Running...'
+              ? 'Running...'
               : allSelected
-                ? '▶ Run All Tests'
-                : `▶ Run ${selected.size} File${selected.size > 1 ? 's' : ''}`}
+                ? 'Run All Tests'
+                : `Run ${selected.size} File${selected.size > 1 ? 's' : ''}`}
           </button>
         </div>
       </div>
@@ -184,14 +184,14 @@ export default function TestResults() {
       {/* ── Empty / loading states ── */}
       {!rawOutput && !running && (
         <div style={{ background: 'white', border: '1px solid #E2E8F0', borderRadius: '0.625rem', padding: '3rem', textAlign: 'center', color: '#64748B', fontSize: '0.875rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🧪</div>
+          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}></div>
           Select categories above, then click <strong>Run All Tests</strong> (10 files · 127 tests)
         </div>
       )}
 
       {running && (
         <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '0.625rem', padding: '2.5rem', textAlign: 'center', color: '#64748B', fontSize: '0.875rem' }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⏳</div>
+          <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}></div>
           Running {ranWith && ranWith.size < CATEGORIES.length ? `${ranWith.size} test file${ranWith.size > 1 ? 's' : ''}` : 'all tests'}… ~60–90 seconds
         </div>
       )}
@@ -216,7 +216,6 @@ export default function TestResults() {
             return (
               <div key={file.file} style={{ background: 'white', border: `1px solid ${ok ? '#E2E8F0' : '#FECACA'}`, borderRadius: '0.625rem', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 1rem', background: ok ? '#F8FAFC' : '#FFF5F5', borderBottom: '1px solid #E2E8F0' }}>
-                  <span style={{ fontSize: '1rem' }}>{cat?.icon || '🧪'}</span>
                   <span style={{ fontWeight: 700, color: '#1E3A5F', fontSize: '0.875rem' }}>{file.label}</span>
                   <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{file.file}.py</span>
                   <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.35rem' }}>

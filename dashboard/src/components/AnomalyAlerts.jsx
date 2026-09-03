@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 function SourceBadge({ source }) {
   if (!source) return null
   const config = {
-    'Groq (llama-3.3-70b)': { bg: '#F0FDF4', color: '#166534', label: '🤖 Groq AI' },
-    'Gemini':               { bg: '#EFF6FF', color: '#1D4ED8', label: '✨ Gemini AI' },
-    'template':             { bg: '#F8FAFC', color: '#64748B', label: '📄 Template' },
+    'Groq (llama-3.3-70b)': { bg: '#F0FDF4', color: '#166534', label: 'Groq AI' },
+    'Gemini':               { bg: '#EFF6FF', color: '#1D4ED8', label: 'Gemini AI' },
+    'template':             { bg: '#F8FAFC', color: '#64748B', label: 'Template' },
   }
   const c = config[source] || { bg: '#F8FAFC', color: '#64748B', label: source }
   return (
@@ -75,7 +75,7 @@ function MetricComparison({ a, normal }) {
                       background: dev.isHigh ? (m.val > m.avg ? '#FEE2E2' : '#FEF3C7') : '#F0FDF4',
                       padding: '0.1rem 0.4rem', borderRadius: '999px'
                     }}>
-                      {dev.dir} {Math.abs(dev.pct)}% {dev.isHigh ? '⚠' : ''}
+                      {dev.dir} {Math.abs(dev.pct)}%{dev.isHigh ? ' !' : ''}
                     </span>
                   ) : '—'}
                 </td>
@@ -139,7 +139,7 @@ export default function AnomalyAlerts() {
             disabled={generating}
             style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem', background: generating ? '#E2E8F0' : '#1E3A5F', color: generating ? '#94A3B8' : 'white', border: 'none', borderRadius: '0.375rem', cursor: generating ? 'not-allowed' : 'pointer', fontWeight: 600 }}
           >
-            {generating ? '⏳ Generating...' : '💬 Generate Explanations'}
+            {generating ? 'Generating...' : 'Generate Explanations'}
           </button>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function AnomalyAlerts() {
                 <span className={`badge badge-${a.severity}`}>{a.severity}</span>
                 {a.models_flagged && (
                   <span style={{ fontSize: '0.65rem', background: '#FEF3C7', color: '#92400E', padding: '0.1rem 0.4rem', borderRadius: '999px', fontWeight: 600 }}>
-                    🔍 {a.models_flagged}
+                    {a.models_flagged}
                   </span>
                 )}
                 <SourceBadge source={a.explanation_source} />
@@ -180,7 +180,7 @@ export default function AnomalyAlerts() {
 
               {a.ai_explanation ? (
                 <div className="anomaly-explanation">
-                  💬 {a.ai_explanation}
+                  {a.ai_explanation}
                 </div>
               ) : (
                 <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontStyle: 'italic', marginTop: '0.4rem' }}>
