@@ -101,7 +101,7 @@ def explain_with_groq(prompt):
         from groq import Groq
         client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="qwen/qwen3.8-27b",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=200
         )
@@ -113,10 +113,12 @@ def explain_with_groq(prompt):
 
 def explain_with_gemini(prompt):
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(prompt)
+        from google import genai
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
         return response.text.strip()
     except Exception:
         return None
@@ -170,12 +172,22 @@ def generate_explanations():
             pass
 
     try:
-        anomalies = conn.execute('''
-            SELECT id, pipeline_name, stage, anomaly_type, severity, iso_score,
-                   job_run_id, models_flagged
-            FROM anomaly_alerts
-            WHERE ai_explanation IS NULL OR ai_explanation = ''
-        ''').fetchall()
+        # Re-process template explanations too — upgrade to Groq/Gemini when keys available
+        if GROQ_API_KEY or GEMINI_API_KEY:
+            anomalies = conn.execute('''
+                SELECT id, pipeline_name, stage, anomaly_type, severity, iso_score,
+                       job_run_id, models_flagged
+                FROM anomaly_alerts
+                WHERE ai_explanation IS NULL OR ai_explanation = ''
+                   OR explanation_source = 'template'
+            ''').fetchall()
+        else:
+            anomalies = conn.execute('''
+                SELECT id, pipeline_name, stage, anomaly_type, severity, iso_score,
+                       job_run_id, models_flagged
+                FROM anomaly_alerts
+                WHERE ai_explanation IS NULL OR ai_explanation = ''
+            ''').fetchall()
     except Exception:
         conn.close()
         return

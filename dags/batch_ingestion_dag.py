@@ -119,6 +119,35 @@ def load_data(**context):
     print(f"Loaded {rows_out} rows | {round(duration, 2)}s")
 
 
+def score_runs(**context):
+    import sys
+    sys.path.insert(0, '/opt/airflow')
+    from ml.score_all import run_scoring
+    results = run_scoring(db_path=DB_PATH)
+    anomalies = [r for r in results if r.get('ml_is_anomaly')]
+    print(f"Scored {len(results)} runs — {len(anomalies)} anomalies detected")
+
+
+def generate_explanations_task(**context):
+    import sys
+    sys.path.insert(0, '/opt/airflow')
+    from ml.explain import generate_explanations, DB_PATH as EXPLAIN_DB
+    import ml.explain as explain_mod
+    explain_mod.DB_PATH = DB_PATH
+    generate_explanations()
+    print("AI explanations generated")
+
+
+def run_alerts(**context):
+    import sys
+    sys.path.insert(0, '/opt/airflow')
+    from ml.alert import send_alerts, DB_PATH as ALERT_DB
+    import ml.alert as alert_mod
+    alert_mod.DB_PATH = DB_PATH
+    result = send_alerts(severity_filter='high', dry_run=False)
+    print(f"Alert workflow done — {result['new']} new alerts, {result['total']} total")
+
+
 with DAG(
     dag_id='batch_ingestion_01',
     default_args=default_args,
@@ -129,8 +158,11 @@ with DAG(
     tags=['etl', 's1-d-03'],
 ) as dag:
 
-    t1 = PythonOperator(task_id='ingest_data', python_callable=ingest_data)
-    t2 = PythonOperator(task_id='transform_data', python_callable=transform_data)
-    t3 = PythonOperator(task_id='load_data', python_callable=load_data)
+    t1 = PythonOperator(task_id='ingest_data',              python_callable=ingest_data)
+    t2 = PythonOperator(task_id='transform_data',           python_callable=transform_data)
+    t3 = PythonOperator(task_id='load_data',                python_callable=load_data)
+    t4 = PythonOperator(task_id='score_runs',               python_callable=score_runs)
+    t5 = PythonOperator(task_id='generate_explanations',    python_callable=generate_explanations_task)
+    t6 = PythonOperator(task_id='run_alerts',               python_callable=run_alerts)
 
-    t1 >> t2 >> t3
+    t1 >> t2 >> t3 >> t4 >> t5 >> t6

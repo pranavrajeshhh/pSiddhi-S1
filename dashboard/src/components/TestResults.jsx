@@ -8,12 +8,16 @@ const STATUS = {
 }
 
 const CATEGORIES = [
-  { key: 'test_smoke',            label: 'Smoke Tests',            icon: '🔥' },
-  { key: 'test_metric_ingestion', label: 'Metric Ingestion',       icon: '📊' },
-  { key: 'test_model_accuracy',   label: 'Model Accuracy',         icon: '🤖' },
-  { key: 'test_false_positive',   label: 'False Positive',         icon: '🎯' },
-  { key: 'test_integration_e2e',  label: 'Integration & E2E',      icon: '🔗' },
-  { key: 'test_prompt_quality',   label: 'AI Explanation Quality', icon: '💬' },
+  { key: 'test_smoke',             label: 'Smoke Tests',            icon: '🔥' },
+  { key: 'test_metric_ingestion',  label: 'Metric Ingestion',       icon: '📊' },
+  { key: 'test_model_accuracy',    label: 'Model Accuracy',         icon: '🤖' },
+  { key: 'test_false_positive',    label: 'False Positive',         icon: '🎯' },
+  { key: 'test_integration_e2e',   label: 'Integration & E2E',      icon: '🔗' },
+  { key: 'test_prompt_quality',    label: 'AI Explanation Quality', icon: '💬' },
+  { key: 'test_ml_units',          label: 'ML Unit Tests',          icon: '🧬' },
+  { key: 'test_alert_workflow',    label: 'Alert Workflow',         icon: '🔔' },
+  { key: 'test_anomaly_scenarios', label: 'Anomaly Scenarios',      icon: '⚡' },
+  { key: 'test_benchmark',         label: 'FP Benchmark',           icon: '📐' },
 ]
 
 const FILE_LABELS = Object.fromEntries(CATEGORIES.map(c => [c.key, c.label]))
@@ -181,14 +185,14 @@ export default function TestResults() {
       {!rawOutput && !running && (
         <div style={{ background: 'white', border: '1px solid #E2E8F0', borderRadius: '0.625rem', padding: '3rem', textAlign: 'center', color: '#64748B', fontSize: '0.875rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🧪</div>
-          Select categories above, then click <strong>Run All Tests</strong> (6 files · 41 tests)
+          Select categories above, then click <strong>Run All Tests</strong> (10 files · 127 tests)
         </div>
       )}
 
       {running && (
         <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '0.625rem', padding: '2.5rem', textAlign: 'center', color: '#64748B', fontSize: '0.875rem' }}>
           <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⏳</div>
-          Running {ranWith && ranWith.size < CATEGORIES.length ? `${ranWith.size} test file${ranWith.size > 1 ? 's' : ''}` : 'all tests'}… ~10–15 seconds
+          Running {ranWith && ranWith.size < CATEGORIES.length ? `${ranWith.size} test file${ranWith.size > 1 ? 's' : ''}` : 'all tests'}… ~60–90 seconds
         </div>
       )}
 

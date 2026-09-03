@@ -40,7 +40,11 @@ export default function ModelScores() {
       .catch(e => setState({ loading: false, data: [], error: e.message, cached: false }))
   }
 
-  useEffect(() => { loadScores() }, [])
+  useEffect(() => {
+    loadScores()
+    const id = setInterval(loadScores, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   if (state.loading) return <div className="loading">Scoring all records... please wait...</div>
   if (state.error) return <div className="empty">Error: {state.error}</div>

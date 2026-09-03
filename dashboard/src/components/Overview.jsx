@@ -4,10 +4,10 @@ export default function Overview() {
   const [stats, setStats] = useState(null)
 
   useEffect(() => {
-    fetch('/api/stats')
-      .then(r => r.json())
-      .then(setStats)
-      .catch(() => {})
+    const load = () => fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {})
+    load()
+    const id = setInterval(load, 30000)
+    return () => clearInterval(id)
   }, [])
 
   if (!stats) return <div className="loading">Loading stats...</div>

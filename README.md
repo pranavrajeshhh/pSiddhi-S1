@@ -100,7 +100,7 @@ A run is flagged if **either** model says anomaly (OR logic). Severity is derive
 
 ```bash
 source venv/bin/activate       # or use Windows venv: venv\Scripts\activate
-pytest tests/ -v               # run all 90 tests
+pytest tests/ -v               # run all tests
 pytest tests/ --cov=ml --cov-report=term-missing   # with coverage
 ```
 
@@ -115,6 +115,9 @@ Test categories:
 | `test_integration_e2e.py` | Integration + E2E | 5 |
 | `test_prompt_quality.py` | AI explanation quality | 5 |
 | `test_ml_units.py` | ML function unit tests | 49 |
+| `test_alert_workflow.py` | Alert routing + deduplication | 16 |
+| `test_anomaly_scenarios.py` | Multi-dimension anomaly detection | 12 |
+| `test_benchmark.py` | FP tuning + precision/recall | 9 |
 
 ---
 
@@ -139,7 +142,7 @@ pSiddhi/
 ├── exporter/           Prometheus metrics exporter
 ├── tests/              Pytest test suite (90 tests)
 ├── dashboard/          React frontend + Express API server
-│   ├── src/            React components (7 tabs)
+│   ├── src/            React components (8 tabs)
 │   └── server.js       Express API (/api/stats, /api/scores, ...)
 ├── grafana/            Grafana provisioning (dashboards + datasource)
 ├── prometheus/         Prometheus scrape config
@@ -151,7 +154,7 @@ pSiddhi/
 
 ---
 
-## Deliverables Status (Phase 1 — Week 10)
+## Deliverables Status
 
 | D-ID | Deliverable | Status |
 |---|---|---|
@@ -160,4 +163,8 @@ pSiddhi/
 | D-03 | Isolation Forest trained and tracked in MLflow | ✓ Done |
 | D-04 | LOF trained, dual-model scoring, severity | ✓ Done |
 | D-05 | AI explanation engine (Groq + Gemini fallback) | ✓ Done |
-| D-06 | React dashboard (7 tabs), 90 tests passing, 48% ml/ coverage | ✓ Done |
+| D-06 | React dashboard (8 tabs), 90+ tests, ml/ coverage | ✓ Done |
+| D-07 | Alert workflow — high-severity routing to alert log | ✓ Done |
+| D-08 | FP tuning + IF vs LOF benchmarking report (benchmark.py) | ✓ Done |
+| D-09 | Multi-dimension anomaly scenario testing (3+ types) | ✓ Done |
+| D-10 | Power BI data exports — 4 CSV views in data/powerbi_exports/ | ✓ Done |

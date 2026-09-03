@@ -11,6 +11,13 @@ DB_PATH = os.path.join(BASE, 'data', 'etl_metrics.db')
 MODELS_DIR = os.path.join(BASE, 'models')
 FEATURES = ['duration_seconds', 'rows_ingested', 'rows_output', 'data_volume_mb', 'processing_time_seconds']
 
+PIPELINE_KEY_MAP = {
+    'batch_ingestion_01': 'batch_ingestion_01',
+    'transformation_pipeline_01': 'transformation_pipeline_01',
+}
+model_cache = {}
+
+
 def load_model(pipeline_key):
     iso_path = os.path.join(MODELS_DIR, f'{pipeline_key}_iso.pkl')
     lof_path = os.path.join(MODELS_DIR, f'{pipeline_key}_lof.pkl')
@@ -25,17 +32,13 @@ def load_model(pipeline_key):
         scaler = pickle.load(f)
     return iso, lof, scaler
 
-PIPELINE_KEY_MAP = {
-    'batch_ingestion_01': 'batch_ingestion_01',
-    'transformation_pipeline_01': 'transformation_pipeline_01',
-}
-model_cache = {}
 
 def get_pipeline_key(pipeline_name):
     for k in PIPELINE_KEY_MAP:
         if k in pipeline_name:
             return k
     return None
+
 
 def severity(score):
     if score < -0.3:
@@ -44,113 +47,123 @@ def severity(score):
         return 'medium'
     return 'low'
 
-# Read all job_runs
-conn = sqlite3.connect(DB_PATH)
-conn.row_factory = sqlite3.Row
 
-# Ensure extra columns exist
-for col in ['job_run_id INTEGER', 'models_flagged TEXT', 'explanation_source TEXT']:
-    try:
-        conn.execute(f'ALTER TABLE anomaly_alerts ADD COLUMN {col}')
-        conn.commit()
-    except Exception:
-        pass
+def ensure_columns(conn):
+    for col in ['job_run_id INTEGER', 'models_flagged TEXT', 'explanation_source TEXT']:
+        try:
+            conn.execute(f'ALTER TABLE anomaly_alerts ADD COLUMN {col}')
+            conn.commit()
+        except Exception:
+            pass
 
-cur = conn.cursor()
-cur.execute("""
-    SELECT id, pipeline_name, stage, duration_seconds, rows_ingested,
-           rows_output, data_volume_mb, processing_time_seconds, status, is_anomaly, start_time
-    FROM job_runs ORDER BY id
-""")
-all_rows = [dict(r) for r in cur.fetchall()]
 
-# Group by pipeline key for batch prediction
-groups = defaultdict(list)
-no_model = []
-for rec in all_rows:
-    key = get_pipeline_key(rec['pipeline_name'])
-    if key:
-        groups[key].append(rec)
-    else:
-        no_model.append(rec)
+def fetch_all_runs(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, pipeline_name, stage, duration_seconds, rows_ingested,
+               rows_output, data_volume_mb, processing_time_seconds, status, is_anomaly, start_time
+        FROM job_runs ORDER BY id
+    """)
+    return [dict(r) for r in cur.fetchall()]
 
-results_map = {}
 
-# Score records without models
-for rec in no_model:
-    results_map[rec['id']] = {
-        **rec,
-        'iso_score': None, 'iso_pred': None, 'lof_pred': None,
-        'ml_is_anomaly': None, 'ml_severity': None, 'models_flagged': [],
-    }
+def score_records(all_rows, cache=None):
+    if cache is None:
+        cache = {}
+    groups = defaultdict(list)
+    no_model = []
+    for rec in all_rows:
+        key = get_pipeline_key(rec['pipeline_name'])
+        if key:
+            groups[key].append(rec)
+        else:
+            no_model.append(rec)
 
-# Batch predict per pipeline — one predict() call for all records in that pipeline
-for key, recs in groups.items():
-    if key not in model_cache:
-        model_cache[key] = load_model(key)
-    iso, lof, scaler = model_cache[key]
-
-    if iso is None:
-        for rec in recs:
-            results_map[rec['id']] = {
-                **rec,
-                'iso_score': None, 'iso_pred': None, 'lof_pred': None,
-                'ml_is_anomaly': None, 'ml_severity': None, 'models_flagged': [],
-            }
-        continue
-
-    feat_matrix = np.array([[rec[f] or 0.0 for f in FEATURES] for rec in recs])
-    feat_scaled = scaler.transform(feat_matrix)
-
-    iso_scores = iso.score_samples(feat_scaled)   # batch — one call
-    iso_preds  = iso.predict(feat_scaled)          # batch — one call
-    lof_preds  = lof.predict(feat_scaled)          # batch — one call
-
-    for i, rec in enumerate(recs):
-        ml_anomaly = bool((iso_preds[i] == -1) or (lof_preds[i] == 1))
-        flagged = []
-        if iso_preds[i] == -1: flagged.append('Isolation Forest')
-        if lof_preds[i] == 1:  flagged.append('LOF')
+    results_map = {}
+    for rec in no_model:
         results_map[rec['id']] = {
             **rec,
-            'iso_score': round(float(iso_scores[i]), 6),
-            'iso_pred':  int(iso_preds[i]),
-            'lof_pred':  int(lof_preds[i]),
-            'ml_is_anomaly': ml_anomaly,
-            'ml_severity': severity(float(iso_scores[i])) if ml_anomaly else None,
-            'models_flagged': flagged,
+            'iso_score': None, 'iso_pred': None, 'lof_pred': None,
+            'ml_is_anomaly': None, 'ml_severity': None, 'models_flagged': [],
         }
 
-# Restore original order
-results = [results_map[r['id']] for r in all_rows]
+    for key, recs in groups.items():
+        if key not in cache:
+            cache[key] = load_model(key)
+        iso, lof, scaler = cache[key]
 
-# Write back to DB in batch
-now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        if iso is None:
+            for rec in recs:
+                results_map[rec['id']] = {
+                    **rec,
+                    'iso_score': None, 'iso_pred': None, 'lof_pred': None,
+                    'ml_is_anomaly': None, 'ml_severity': None, 'models_flagged': [],
+                }
+            continue
 
-cur.executemany(
-    'UPDATE job_runs SET is_anomaly = ? WHERE id = ?',
-    [(1 if r['ml_is_anomaly'] else 0, r['id']) for r in results if r['ml_is_anomaly'] is not None]
-)
+        feat_matrix = np.array([[rec[f] or 0.0 for f in FEATURES] for rec in recs])
+        feat_scaled = scaler.transform(feat_matrix)
+        iso_scores = iso.score_samples(feat_scaled)
+        iso_preds  = iso.predict(feat_scaled)
+        lof_preds  = lof.predict(feat_scaled)
 
-# Insert new anomaly_alerts (skip if job_run_id already exists)
-existing_ids = {row[0] for row in cur.execute('SELECT job_run_id FROM anomaly_alerts WHERE job_run_id IS NOT NULL').fetchall()}
+        for i, rec in enumerate(recs):
+            ml_anomaly = bool((iso_preds[i] == -1) or (lof_preds[i] == 1))
+            flagged = []
+            if iso_preds[i] == -1: flagged.append('Isolation Forest')
+            if lof_preds[i] == 1:  flagged.append('LOF')
+            results_map[rec['id']] = {
+                **rec,
+                'iso_score': round(float(iso_scores[i]), 6),
+                'iso_pred':  int(iso_preds[i]),
+                'lof_pred':  int(lof_preds[i]),
+                'ml_is_anomaly': ml_anomaly,
+                'ml_severity': severity(float(iso_scores[i])) if ml_anomaly else None,
+                'models_flagged': flagged,
+            }
 
-new_alerts = [
-    (r['pipeline_name'], r['stage'], 'ml_detected', r['ml_severity'],
-     r['iso_score'], now, r['id'], ', '.join(r['models_flagged']))
-    for r in results
-    if r['ml_is_anomaly'] and r['id'] not in existing_ids
-]
+    return [results_map[r['id']] for r in all_rows]
 
-if new_alerts:
+
+def write_results(conn, results):
+    cur = conn.cursor()
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     cur.executemany(
-        '''INSERT INTO anomaly_alerts
-           (pipeline_name, stage, anomaly_type, severity, iso_score, detected_at, job_run_id, models_flagged)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-        new_alerts
+        'UPDATE job_runs SET is_anomaly = ? WHERE id = ?',
+        [(1 if r['ml_is_anomaly'] else 0, r['id']) for r in results if r['ml_is_anomaly'] is not None]
     )
+    existing_ids = {row[0] for row in cur.execute(
+        'SELECT job_run_id FROM anomaly_alerts WHERE job_run_id IS NOT NULL'
+    ).fetchall()}
+    new_alerts = [
+        (r['pipeline_name'], r['stage'], 'ml_detected', r['ml_severity'],
+         r['iso_score'], now, r['id'], ', '.join(r['models_flagged']))
+        for r in results
+        if r['ml_is_anomaly'] and r['id'] not in existing_ids
+    ]
+    if new_alerts:
+        cur.executemany(
+            '''INSERT INTO anomaly_alerts
+               (pipeline_name, stage, anomaly_type, severity, iso_score, detected_at, job_run_id, models_flagged)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+            new_alerts
+        )
+    conn.commit()
+    return new_alerts
 
-conn.commit()
-conn.close()
 
-print(json.dumps(results))
+def run_scoring(db_path=None):
+    db_path = db_path or DB_PATH
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    ensure_columns(conn)
+    all_rows = fetch_all_runs(conn)
+    results = score_records(all_rows, cache=model_cache)
+    write_results(conn, results)
+    conn.close()
+    return results
+
+
+if __name__ == '__main__':
+    results = run_scoring()
+    print(json.dumps(results))

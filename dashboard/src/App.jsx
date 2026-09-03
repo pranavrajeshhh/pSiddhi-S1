@@ -5,6 +5,8 @@ import AnomalyAlerts from './components/AnomalyAlerts'
 import EmbedView from './components/EmbedView'
 import TestResults from './components/TestResults'
 import ModelScores from './components/ModelScores'
+import AlertWorkflow from './components/AlertWorkflow'
+import PowerBIExport from './components/PowerBIExport'
 import './App.css'
 
 const TABS = [
@@ -12,6 +14,8 @@ const TABS = [
   { id: 'runs',         label: '⚙️ Pipeline Runs' },
   { id: 'anomalies',    label: '🚨 Anomaly Alerts' },
   { id: 'modelscores',  label: '🤖 Model Scores' },
+  { id: 'alerts',       label: '🔔 Alert Workflow' },
+  { id: 'powerbi',      label: '📤 Power BI Export' },
   { id: 'grafana',      label: '📈 Grafana' },
   { id: 'airflow',      label: '🔁 Airflow' },
   { id: 'tests',        label: '✅ Test Results' },
@@ -47,6 +51,8 @@ export default function App() {
         {active === 'runs'        && <PipelineRuns />}
         {active === 'anomalies'   && <AnomalyAlerts />}
         {active === 'modelscores' && <ModelScores />}
+        {active === 'alerts'      && <AlertWorkflow />}
+        {active === 'powerbi'     && <PowerBIExport />}
         {active === 'grafana'     && <EmbedView url="http://localhost:3000" title="Grafana Dashboards" />}
         {active === 'airflow'     && <EmbedView url="http://localhost:8080" title="Airflow Pipelines" />}
         {active === 'tests'       && <TestResults />}

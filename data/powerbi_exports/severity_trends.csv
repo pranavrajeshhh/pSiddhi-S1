@@ -1,0 +1,8 @@
+pipeline_name,week,severity,count
+batch_ingestion_01,2026-W35,high,4
+transformation_pipeline_01,2026-W35,high,9
+batch_ingestion_01,2026-W34,high,4
+batch_ingestion_01,2026-W34,low,2
+batch_ingestion_01,2026-W28,high,16
+batch_ingestion_01,2026-W28,low,1
+transformation_pipeline_01,2026-W28,high,21

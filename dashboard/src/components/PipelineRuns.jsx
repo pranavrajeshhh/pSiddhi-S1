@@ -20,10 +20,10 @@ export default function PipelineRuns() {
   const [sortDir, setSortDir]         = useState('desc')
 
   useEffect(() => {
-    fetch('/api/job-runs')
-      .then(r => r.json())
-      .then(setRuns)
-      .catch(() => {})
+    const load = () => fetch('/api/job-runs').then(r => r.json()).then(setRuns).catch(() => {})
+    load()
+    const id = setInterval(load, 30000)
+    return () => clearInterval(id)
   }, [])
 
   const handleSort = (key) => {

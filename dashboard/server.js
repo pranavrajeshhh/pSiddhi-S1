@@ -4,6 +4,7 @@ import Database from 'better-sqlite3'
 import { execSync, spawn } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { readFileSync, existsSync } from 'fs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DB_PATH = path.join(__dirname, '..', 'data', 'etl_metrics.db')
@@ -117,12 +118,17 @@ app.get('/api/scores', (req, res) => {
 })
 
 const FILE_LABELS = {
-  'test_smoke':            'Smoke Tests',
-  'test_metric_ingestion': 'Metric Ingestion',
-  'test_model_accuracy':   'Model Accuracy',
-  'test_false_positive':   'False Positive Analysis',
-  'test_integration_e2e':  'Integration & E2E',
-  'test_prompt_quality':   'AI Explanation Quality',
+  'test_smoke':             'Smoke Tests',
+  'test_metric_ingestion':  'Metric Ingestion',
+  'test_model_accuracy':    'Model Accuracy',
+  'test_false_positive':    'False Positive Analysis',
+  'test_integration_e2e':   'Integration & E2E',
+  'test_prompt_quality':    'AI Explanation Quality',
+  'test_ml_units':          'ML Unit Tests',
+  'test_alert_workflow':    'Alert Workflow',
+  'test_anomaly_scenarios': 'Anomaly Scenarios',
+  'test_benchmark':         'FP Tuning & Benchmark',
+  'test_coverage_boost':    'Coverage Boost',
 }
 
 function parseTestOutput(raw) {
@@ -159,12 +165,71 @@ app.get('/api/tests', (req, res) => {
   try {
     const output = execSync(
       `python -m pytest ${testTarget} -v --tb=short 2>&1`,
-      { cwd: PROJECT_ROOT, timeout: 60000, encoding: 'utf8' }
+      { cwd: PROJECT_ROOT, timeout: 120000, encoding: 'utf8' }
     )
     res.json({ success: true, structured: parseTestOutput(output), output })
   } catch (err) {
     const raw = err.stdout || err.message
     res.json({ success: false, structured: parseTestOutput(raw), output: raw })
+  }
+})
+
+// Power BI — run export script then serve download links
+app.post('/api/export/powerbi', (req, res) => {
+  let output = ''
+  try {
+    output = execSync('python ml/export_powerbi.py', { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf8' })
+  } catch (err) {
+    output = err.stdout || err.message
+  }
+  // Success = files exist on disk (don't rely on exit code)
+  const exportDir = path.join(PROJECT_ROOT, 'data', 'powerbi_exports')
+  const csvFiles = ['anomaly_summary.csv', 'pipeline_health.csv', 'severity_trends.csv', 'weekly_report.csv']
+  const allExist = csvFiles.every(f => existsSync(path.join(exportDir, f)))
+  res.json({ success: allExist, output })
+})
+
+app.get('/api/export/powerbi/:file', (req, res) => {
+  const allowed = ['anomaly_summary.csv', 'pipeline_health.csv', 'severity_trends.csv', 'weekly_report.csv']
+  const file = req.params.file
+  if (!allowed.includes(file)) return res.status(404).json({ error: 'Not found' })
+  const filePath = path.join(PROJECT_ROOT, 'data', 'powerbi_exports', file)
+  if (!existsSync(filePath)) return res.status(404).json({ error: 'Run export first' })
+  res.download(filePath)
+})
+
+// High-severity alert log (from ml/alert.py output)
+app.get('/api/alerts/high', (req, res) => {
+  const logPath = path.join(PROJECT_ROOT, 'data', 'alert_log.json')
+  try {
+    if (!existsSync(logPath)) return res.json([])
+    res.json(JSON.parse(readFileSync(logPath, 'utf8')))
+  } catch {
+    res.json([])
+  }
+})
+
+// Run alert workflow — routes high-severity anomalies to alert log
+app.post('/api/alerts/run', (req, res) => {
+  try {
+    const output = execSync(
+      'python ml/alert.py',
+      { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf8' }
+    )
+    res.json({ success: true, output })
+  } catch (err) {
+    res.json({ success: false, output: err.stdout || err.message })
+  }
+})
+
+// Benchmark report (from ml/benchmark.py output)
+app.get('/api/benchmark', (req, res) => {
+  const reportPath = path.join(PROJECT_ROOT, 'data', 'benchmark_report.json')
+  try {
+    if (!existsSync(reportPath)) return res.json({ available: false })
+    res.json({ available: true, report: JSON.parse(readFileSync(reportPath, 'utf8')) })
+  } catch {
+    res.json({ available: false })
   }
 })
 

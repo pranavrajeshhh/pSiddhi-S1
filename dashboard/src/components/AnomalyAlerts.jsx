@@ -100,7 +100,11 @@ export default function AnomalyAlerts() {
       .catch(() => {})
   }
 
-  useEffect(() => { loadAlerts() }, [])
+  useEffect(() => {
+    loadAlerts()
+    const id = setInterval(loadAlerts, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   const generateExplanations = async () => {
     setGenerating(true)
