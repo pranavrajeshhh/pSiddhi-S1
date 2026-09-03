@@ -106,11 +106,11 @@ app.get('/api/scores', (req, res) => {
       { cwd: PROJECT_ROOT, timeout: 120000, encoding: 'utf8' }
     )
     scoresCache = JSON.parse(output)
-    // Run explain.py in background to generate AI explanations
-    const exp = spawn('python', ['ml/explain.py'], {
-      cwd: PROJECT_ROOT, stdio: 'ignore', detached: true
-    })
-    exp.unref()
+    // Chain: explain → alert in background so dashboard updates automatically
+    const chain = spawn('python', ['-c',
+      'import sys; sys.path.insert(0,"."); from ml.explain import generate_explanations; generate_explanations(); from ml.alert import send_alerts; send_alerts(severity_filter="high")'
+    ], { cwd: PROJECT_ROOT, stdio: 'ignore', detached: true })
+    chain.unref()
     res.json({ success: true, data: scoresCache, cached: false })
   } catch (err) {
     res.json({ success: false, data: [], error: err.message })
