@@ -34,8 +34,8 @@ export default function Overview() {
         </div>
         <div className="stat-card">
           <div className="stat-label">ML Models Trained</div>
-          <div className="stat-value success">4</div>
-          <div className="stat-sub">Isolation Forest + LOF × 2</div>
+          <div className="stat-value success">2</div>
+          <div className="stat-sub">Isolation Forest + LOF</div>
         </div>
       </div>
 

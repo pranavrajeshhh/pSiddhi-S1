@@ -9,7 +9,7 @@ function ScoreBar({ value }) {
       <div style={{ flex: 1, height: '6px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '3px' }} />
       </div>
-      <span style={{ fontSize: '0.7rem', fontVariantNumeric: 'tabular-nums', color, minWidth: '3.5rem', textAlign: 'right', fontWeight: 600 }}>
+      <span style={{ fontSize: '0.65rem', fontVariantNumeric: 'tabular-nums', color, minWidth: '3rem', textAlign: 'right', fontWeight: 600 }}>
         {value.toFixed(4)}
       </span>
     </div>
@@ -110,7 +110,7 @@ export default function ModelScores() {
       </div>
 
       <div className="table-wrap">
-        <table>
+        <table className="table-compact" style={{ minWidth: '960px' }}>
           <thead>
             <tr>
               <th>#</th>
@@ -119,7 +119,7 @@ export default function ModelScores() {
               <th>Duration (s)</th>
               <th>Rows In</th>
               <th>Rows Out</th>
-              <th style={{ minWidth: '160px' }}>Isolation Forest Score</th>
+              <th style={{ minWidth: '140px' }}>IF Score</th>
               <th>LOF</th>
               <th>IF Flag</th>
               <th>Models Flagged</th>
@@ -130,33 +130,33 @@ export default function ModelScores() {
           <tbody>
             {rows.map(r => (
               <tr key={r.id} style={{ background: r.ml_is_anomaly ? '#FFF5F5' : 'transparent' }}>
-                <td style={{ color: '#94A3B8', fontSize: '0.7rem' }}>{r.id}</td>
-                <td style={{ fontSize: '0.72rem', fontWeight: 600, color: '#1E3A5F' }}>
+                <td style={{ color: '#94A3B8' }}>{r.id}</td>
+                <td style={{ fontWeight: 600, color: '#1E3A5F' }}>
                   {r.pipeline_name.replace('_01', '')}
                 </td>
-                <td style={{ fontSize: '0.72rem' }}>{r.stage}</td>
-                <td style={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.78rem' }}>{r.duration_seconds?.toFixed(1)}</td>
-                <td style={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.78rem' }}>{r.rows_ingested?.toLocaleString()}</td>
-                <td style={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.78rem' }}>{r.rows_output?.toLocaleString()}</td>
-                <td style={{ minWidth: '160px' }}>
+                <td>{r.stage}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{r.duration_seconds?.toFixed(1)}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{r.rows_ingested?.toLocaleString()}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>{r.rows_output?.toLocaleString()}</td>
+                <td style={{ minWidth: '140px' }}>
                   <ScoreBar value={r.iso_score} />
                 </td>
-                <td style={{ textAlign: 'center', fontSize: '0.78rem' }}>
+                <td style={{ textAlign: 'center' }}>
                   {r.lof_pred === null ? '—' : r.lof_pred === 1
                     ? <span style={{ color: '#EF4444', fontWeight: 700 }}>1</span>
                     : <span style={{ color: '#22C55E' }}>0</span>}
                 </td>
-                <td style={{ textAlign: 'center', fontSize: '0.78rem' }}>
+                <td style={{ textAlign: 'center' }}>
                   {r.iso_pred === null ? '—' : r.iso_pred === -1
                     ? <span style={{ color: '#EF4444', fontWeight: 700 }}>-1</span>
                     : <span style={{ color: '#22C55E' }}>+1</span>}
                 </td>
-                <td style={{ fontSize: '0.68rem', color: r.models_flagged?.length ? '#B91C1C' : '#64748B' }}>
+                <td style={{ color: r.models_flagged?.length ? '#B91C1C' : '#64748B' }}>
                   {r.models_flagged?.length ? r.models_flagged.join(', ') : '—'}
                 </td>
                 <td>
                   {r.ml_is_anomaly === null
-                    ? <span style={{ color: '#94A3B8', fontSize: '0.72rem' }}>no model</span>
+                    ? <span style={{ color: '#94A3B8' }}>no model</span>
                     : r.ml_is_anomaly
                       ? <span className="badge badge-anomaly">⚠ Anomaly</span>
                       : <span className="badge badge-success">Normal</span>}

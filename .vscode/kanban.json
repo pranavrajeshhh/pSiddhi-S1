@@ -5,24 +5,16 @@
             "title": "To-Do",
             "tasks": [
                 {
-                    "text": "Get Gemini + Groq API keys and test AI explanations",
-                    "id": "todo-api-keys"
+                    "text": "Alert workflow — anomaly queue + routing (high severity → notification)",
+                    "id": "todo-alert-workflow"
                 },
                 {
-                    "text": "Post-midterm: Alert History + Root Cause Summary dashboard views",
-                    "id": "todo-post-mid-dash"
+                    "text": "False positive tuning + benchmarking report — IF vs LOF precision/recall comparison",
+                    "id": "todo-fp-tuning"
                 },
                 {
-                    "text": "Post-midterm: False positive tuning + threshold refinement",
-                    "id": "todo-post-mid-tuning"
-                },
-                {
-                    "text": "Post-midterm: Full QA validation suite + Moodle upload",
-                    "id": "todo-post-mid-qa"
-                },
-                {
-                    "text": "Post-midterm: Final demo preparation + documentation",
-                    "id": "todo-post-mid-docs"
+                    "text": "Final documentation + Moodle submission — full evidence pack",
+                    "id": "todo-final-docs"
                 }
             ],
             "id": "v0luyd8wsbdwfehu49ywu6ev",
@@ -32,12 +24,12 @@
             "title": "On-Progress",
             "tasks": [
                 {
-                    "text": "Add sample CSV as DAG data source",
-                    "id": "todo-csv-source"
+                    "text": "Test coverage: 48% → 80% target — adding mocked unit tests for score_all.py and train_pipeline()",
+                    "id": "prog-coverage"
                 },
                 {
-                    "text": "Restart Docker with updated Grafana dashboards",
-                    "id": "todo-grafana-restart"
+                    "text": "Power BI dashboard — starting Week 11, 4 views planned",
+                    "id": "prog-powerbi"
                 }
             ],
             "id": "pm0v3vvs3jr7owapfig6hfjq",
@@ -59,7 +51,7 @@
                     "id": "done-prometheus"
                 },
                 {
-                    "text": "Grafana connected to Prometheus — first dashboard created",
+                    "text": "Grafana connected to Prometheus — 2 dashboards: Anomaly Timeline + Job Run Trends",
                     "id": "done-grafana"
                 },
                 {
@@ -67,7 +59,7 @@
                     "id": "done-sqlite"
                 },
                 {
-                    "text": "Baseline data generator script built (ml/generate_baseline.py)",
+                    "text": "Baseline data generator script built (ml/generate_baseline.py) — 633 records seeded",
                     "id": "done-baseline-gen"
                 },
                 {
@@ -79,7 +71,7 @@
                     "id": "done-detect"
                 },
                 {
-                    "text": "AI explanation engine built — Gemini + Groq + fallback (ml/explain.py)",
+                    "text": "AI explanation engine built — Groq primary + Gemini fallback + template (ml/explain.py)",
                     "id": "done-explain"
                 },
                 {
@@ -87,24 +79,72 @@
                     "id": "done-grafana-dashboards"
                 },
                 {
-                    "text": "Smoke tests + unit tests written (tests/test_smoke.py)",
-                    "id": "done-tests"
-                },
-                {
-                    "text": "ML training run — Isolation Forest + LOF trained on 318/315 baseline samples (mlflow.db)",
+                    "text": "ML training run — Isolation Forest + LOF trained per pipeline, 4 runs logged in MLflow",
                     "id": "done-train-run"
                 },
                 {
-                    "text": "Anomaly detection run — 1 anomaly detected + classified (ml/detect.py)",
-                    "id": "done-detect-run"
+                    "text": "score_all.py batch scoring — all 633 records scored, 38 anomalies detected (6% rate)",
+                    "id": "done-score-all"
                 },
                 {
-                    "text": "AI explanation generated via fallback template (ml/explain.py)",
+                    "text": "AI explanations generated — Groq primary, 37/38 anomalies explained with metric comparison",
                     "id": "done-explain-run"
                 },
                 {
-                    "text": "Pytest smoke tests — 17 passed, 1 skipped (prometheus skip expected in Windows)",
+                    "text": "Gemini + Groq API keys configured and tested — both working, Groq elevated to primary",
+                    "id": "todo-api-keys"
+                },
+                {
+                    "text": "React dashboard built — 7 tabs: Overview, Pipeline Runs, Anomaly Alerts, Model Scores, Grafana, Airflow, Test Results",
+                    "id": "done-dashboard"
+                },
+                {
+                    "text": "Express API server — /api/stats, /api/job-runs, /api/anomalies, /api/scores, /api/tests, /api/explain",
+                    "id": "done-express"
+                },
+                {
+                    "text": "test_ml_units.py added — 49 new unit tests covering detect, explain, generate_baseline, train modules",
+                    "id": "done-ml-units"
+                },
+                {
+                    "text": "90 tests passing (up from 17) — smoke, metric ingestion, model accuracy, FP, integration, prompt quality, ML units",
                     "id": "done-tests-run"
+                },
+                {
+                    "text": "ml/ coverage: 12% → 48% — detect.py at 82%, generate_baseline.py at 97%",
+                    "id": "done-coverage"
+                },
+                {
+                    "text": "ml/__init__.py + tests/__init__.py + tests/conftest.py added — proper package structure",
+                    "id": "done-pkg-structure"
+                },
+                {
+                    "text": "Bug fix: import random moved to top of ml/train.py (was inside __main__ block)",
+                    "id": "done-train-fix"
+                },
+                {
+                    "text": "Bug fix: duplicate type attribute removed from PipelineRuns.jsx input element",
+                    "id": "done-jsx-fix"
+                },
+                {
+                    "text": ".env.example added — template for GROQ_API_KEY and GEMINI_API_KEY",
+                    "id": "done-env-example"
+                },
+                {
+                    "text": "README.md rewritten — full setup guide, architecture overview, deliverables table",
+                    "id": "done-readme"
+                },
+                {
+                    "text": "Midterm document submitted — 13 pages, 8 evidence blocks, 92% self-assessment, EV-01 to EV-08",
+                    "id": "done-midterm"
+                },
+                {
+                    "text": "Databricks approval condition formally closed — local MLflow + scikit-learn delivers equivalent capability at ₹0",
+                    "id": "done-databricks"
+                },
+                {
+                    "text": "Midterm Word doc fixes done — commit history screenshot added + Databricks closure sentence added",
+                    "id": "done-midterm-fixes"
                 }
             ],
             "id": "y0uyzs8ztj3kdj16ofqvia8d",
@@ -113,5 +153,5 @@
     ],
     "autosave": true,
     "saveToFile": true,
-    "timestamp": 1783937149358
+    "timestamp": 1787913327878
 }

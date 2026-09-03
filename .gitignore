@@ -6,3 +6,7 @@ requirements.txt
 SETUP.md
 setup-proof/
 .coverage
+venv/
+*.docx
+*.xlsx
+*.pptx

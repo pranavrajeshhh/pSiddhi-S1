@@ -75,9 +75,8 @@ export default function PipelineRuns() {
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <input
-            type="text"
-            placeholder="Go to run #..."
             type="number"
+            placeholder="Go to run #..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{ fontSize: '0.8rem', padding: '0.35rem 0.625rem', border: '1px solid #E2E8F0', borderRadius: '0.375rem', color: '#374151', width: '160px' }}

@@ -1,93 +1,163 @@
-# psiddhi-s1
+# S1-D-03 — ML Anomaly Detection for ETL Pipelines
 
+**pSiddhi Semester 1 | EMP-2025-P499 · Pranav Rajesh | Track: Data**
 
+Detects anomalies in ETL pipeline runs using Isolation Forest and LOF, generates AI-written explanations via Groq/Gemini, and exposes everything through a React dashboard.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## System Architecture
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/pranavrajeshhh/psiddhi-s1.git
-git branch -M main
-git push -uf origin main
+Airflow (:8080)
+  └─ batch_ingestion_01 DAG        ─┐
+  └─ transformation_pipeline_01 DAG ┘
+          │ writes metrics
+          ▼
+    SQLite (data/etl_metrics.db)
+          │
+          ├─► Prometheus Exporter (:8000) ──► Prometheus (:9090) ──► Grafana (:3000)
+          │
+          └─► ML Models (ml/)
+                ├─ IsolationForest  (models/*_iso.pkl)
+                ├─ LOF             (models/*_lof.pkl)
+                └─ AI Explanation  (Groq → Gemini → template)
+                        │
+                        ▼
+              React Dashboard (:5173)
+              [Overview | Pipeline Runs | Anomaly Alerts | Model Scores | Grafana | Airflow | Test Results]
 ```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab.com/pranavrajeshhh/psiddhi-s1/-/settings/integrations)
+## Prerequisites
 
-## Collaborate with your team
+- Python 3.11+ (WSL2/Ubuntu recommended)
+- Docker Engine (not Docker Desktop — company policy)
+- Node.js 18+
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+---
 
-## Test and Deploy
+## Setup
 
-Use the built-in continuous integration in GitLab.
+### 1. Clone and configure environment
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+```bash
+git clone https://gitlab.com/pranavrajeshhh/psiddhi-s1.git
+cd psiddhi-s1
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY and GEMINI_API_KEY
+```
 
-***
+### 2. Start the observability stack (Docker)
 
-# Editing this README
+```bash
+docker compose up -d
+# Starts: Airflow (:8080), Prometheus (:9090), Grafana (:3000), Metrics Exporter (:8000)
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### 3. Set up Python environment (WSL2)
 
-## Suggestions for a good README
+```bash
+sudo apt install python3-full python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install pandas scikit-learn pyod numpy joblib sqlalchemy prometheus-client mlflow groq google-generativeai pytest pytest-cov
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### 4. Generate baseline data and train models
 
-## Name
-Choose a self-explaining name for your project.
+```bash
+source venv/bin/activate
+python ml/generate_baseline.py   # generates 633 historical job runs
+python ml/train.py               # trains IF + LOF per pipeline, logs to MLflow
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### 5. Start the React dashboard
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```bash
+cd dashboard
+npm install
+npm run dev
+# Opens at http://localhost:5173
+# API server runs at http://localhost:3001
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+---
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## ML Models
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+| Model | Library | Purpose |
+|---|---|---|
+| Isolation Forest | scikit-learn | Assigns an anomaly score; more negative = more isolated from normal cluster |
+| LOF | PyOD | Compares local density; 1 = anomaly, 0 = normal |
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+A run is flagged if **either** model says anomaly (OR logic). Severity is derived from the IF score: `< −0.3` = high, `< −0.1` = medium, else low.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Running Tests
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```bash
+source venv/bin/activate       # or use Windows venv: venv\Scripts\activate
+pytest tests/ -v               # run all 90 tests
+pytest tests/ --cov=ml --cov-report=term-missing   # with coverage
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+Test categories:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+| File | Category | Tests |
+|---|---|---|
+| `test_smoke.py` | Smoke / infra checks | 17 |
+| `test_metric_ingestion.py` | Metric ingestion units | 6 |
+| `test_model_accuracy.py` | Model accuracy + drift | 5 |
+| `test_false_positive.py` | False positive rate | 3 |
+| `test_integration_e2e.py` | Integration + E2E | 5 |
+| `test_prompt_quality.py` | AI explanation quality | 5 |
+| `test_ml_units.py` | ML function unit tests | 49 |
 
-## License
-For open source projects, say how it is licensed.
+---
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## MLflow Experiment Tracking
+
+```bash
+source venv/bin/activate
+mlflow ui --backend-store-uri sqlite:///data/mlflow.db --port 5000
+# Open http://localhost:5000
+```
+
+All training runs are logged under the experiment `etl_anomaly_detection`.
+
+---
+
+## Project Structure
+
+```
+pSiddhi/
+├── dags/               Airflow DAG definitions
+├── ml/                 ML training, detection, scoring, explanation
+├── exporter/           Prometheus metrics exporter
+├── tests/              Pytest test suite (90 tests)
+├── dashboard/          React frontend + Express API server
+│   ├── src/            React components (7 tabs)
+│   └── server.js       Express API (/api/stats, /api/scores, ...)
+├── grafana/            Grafana provisioning (dashboards + datasource)
+├── prometheus/         Prometheus scrape config
+├── models/             Serialised .pkl model files
+├── data/               SQLite databases (etl_metrics.db, mlflow.db)
+├── docker-compose.yml  Orchestrates Airflow, Prometheus, Grafana, Exporter
+└── .env.example        API key template (copy to .env)
+```
+
+---
+
+## Deliverables Status (Phase 1 — Week 10)
+
+| D-ID | Deliverable | Status |
+|---|---|---|
+| D-01 | 2 Airflow DAGs in Docker, Prometheus metrics | ✓ Done |
+| D-02 | Prometheus exporter running, 633 baseline records | ✓ Done |
+| D-03 | Isolation Forest trained and tracked in MLflow | ✓ Done |
+| D-04 | LOF trained, dual-model scoring, severity | ✓ Done |
+| D-05 | AI explanation engine (Groq + Gemini fallback) | ✓ Done |
+| D-06 | React dashboard (7 tabs), 90 tests passing, 48% ml/ coverage | ✓ Done |
