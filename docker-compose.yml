@@ -16,6 +16,7 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./data:/opt/airflow/data
     - ./ml:/opt/airflow/ml
+    - ./models:/opt/airflow/models
     - ./.env:/opt/airflow/.env
   depends_on:
     postgres:
