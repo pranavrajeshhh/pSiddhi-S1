@@ -1,0 +1,212 @@
+{
+  "batch_ingestion_01": {
+    "all_results": [
+      {
+        "model": "IsolationForest",
+        "contamination": 0.03,
+        "precision": 0.8182,
+        "recall": 0.2093,
+        "f1": 0.3333,
+        "fp_rate": 0.0064,
+        "total_flagged": 11,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.03,
+        "precision": 0.2222,
+        "recall": 0.0465,
+        "f1": 0.0769,
+        "fp_rate": 0.0223,
+        "total_flagged": 9,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.05,
+        "precision": 0.7778,
+        "recall": 0.3256,
+        "f1": 0.459,
+        "fp_rate": 0.0127,
+        "total_flagged": 18,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.05,
+        "precision": 0.25,
+        "recall": 0.0698,
+        "f1": 0.1091,
+        "fp_rate": 0.0287,
+        "total_flagged": 12,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.07,
+        "precision": 0.76,
+        "recall": 0.4419,
+        "f1": 0.5588,
+        "fp_rate": 0.0191,
+        "total_flagged": 25,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.07,
+        "precision": 0.25,
+        "recall": 0.1395,
+        "f1": 0.1791,
+        "fp_rate": 0.0573,
+        "total_flagged": 24,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.1,
+        "precision": 0.5556,
+        "recall": 0.4651,
+        "f1": 0.5063,
+        "fp_rate": 0.051,
+        "total_flagged": 36,
+        "actual_anomalies": 43
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.1,
+        "precision": 0.1935,
+        "recall": 0.1395,
+        "f1": 0.1622,
+        "fp_rate": 0.0796,
+        "total_flagged": 31,
+        "actual_anomalies": 43
+      }
+    ],
+    "best_isolation_forest": {
+      "model": "IsolationForest",
+      "contamination": 0.07,
+      "precision": 0.76,
+      "recall": 0.4419,
+      "f1": 0.5588,
+      "fp_rate": 0.0191,
+      "total_flagged": 25,
+      "actual_anomalies": 43
+    },
+    "best_lof": {
+      "model": "LOF",
+      "contamination": 0.07,
+      "precision": 0.25,
+      "recall": 0.1395,
+      "f1": 0.1791,
+      "fp_rate": 0.0573,
+      "total_flagged": 24,
+      "actual_anomalies": 43
+    },
+    "recommendation": 0.07
+  },
+  "transformation_pipeline_01": {
+    "all_results": [
+      {
+        "model": "IsolationForest",
+        "contamination": 0.03,
+        "precision": 0.9091,
+        "recall": 0.1852,
+        "f1": 0.3077,
+        "fp_rate": 0.0034,
+        "total_flagged": 11,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.03,
+        "precision": 1.0,
+        "recall": 0.1852,
+        "f1": 0.3125,
+        "fp_rate": 0.0,
+        "total_flagged": 10,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.05,
+        "precision": 0.8333,
+        "recall": 0.2778,
+        "f1": 0.4167,
+        "fp_rate": 0.0102,
+        "total_flagged": 18,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.05,
+        "precision": 1.0,
+        "recall": 0.2963,
+        "f1": 0.4571,
+        "fp_rate": 0.0,
+        "total_flagged": 16,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.07,
+        "precision": 0.72,
+        "recall": 0.3333,
+        "f1": 0.4557,
+        "fp_rate": 0.0238,
+        "total_flagged": 25,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.07,
+        "precision": 0.9091,
+        "recall": 0.3704,
+        "f1": 0.5263,
+        "fp_rate": 0.0068,
+        "total_flagged": 22,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "IsolationForest",
+        "contamination": 0.1,
+        "precision": 0.7143,
+        "recall": 0.463,
+        "f1": 0.5618,
+        "fp_rate": 0.034,
+        "total_flagged": 35,
+        "actual_anomalies": 54
+      },
+      {
+        "model": "LOF",
+        "contamination": 0.1,
+        "precision": 0.697,
+        "recall": 0.4259,
+        "f1": 0.5287,
+        "fp_rate": 0.034,
+        "total_flagged": 33,
+        "actual_anomalies": 54
+      }
+    ],
+    "best_isolation_forest": {
+      "model": "IsolationForest",
+      "contamination": 0.1,
+      "precision": 0.7143,
+      "recall": 0.463,
+      "f1": 0.5618,
+      "fp_rate": 0.034,
+      "total_flagged": 35,
+      "actual_anomalies": 54
+    },
+    "best_lof": {
+      "model": "LOF",
+      "contamination": 0.1,
+      "precision": 0.697,
+      "recall": 0.4259,
+      "f1": 0.5287,
+      "fp_rate": 0.034,
+      "total_flagged": 33,
+      "actual_anomalies": 54
+    },
+    "recommendation": 0.1
+  }
+}

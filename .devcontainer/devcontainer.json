@@ -1,0 +1,24 @@
+{
+  "name": "pSiddhi S1-D-03 demo",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.11" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "hostRequirements": { "cpus": 4, "memory": "8gb" },
+  "forwardPorts": [5173, 3001, 8080, 3000, 9090, 8000, 5000],
+  "portsAttributes": {
+    "5173": { "label": "React dashboard", "onAutoForward": "openBrowser" },
+    "3001": { "label": "Dashboard API" },
+    "8080": { "label": "Airflow (admin/admin)" },
+    "3000": { "label": "Grafana (admin/admin)" },
+    "9090": { "label": "Prometheus" },
+    "8000": { "label": "Metrics exporter" },
+    "5000": { "label": "MLflow UI" }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": { "extensions": ["ms-python.python", "ms-azuretools.vscode-docker"] }
+  }
+}
