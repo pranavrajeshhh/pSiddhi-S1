@@ -21,6 +21,15 @@ const TABS = [
   { id: 'tests',        label: 'Test Results' },
 ]
 
+// In Codespaces the browser reaches services at <name>-<port>.<domain>, not localhost.
+function svcUrl(port) {
+  const h = window.location.hostname
+  if (h.includes('.app.github.dev') || h.includes('.githubpreview.dev')) {
+    return `https://${h.replace(/-\d+\./, `-${port}.`)}`
+  }
+  return `http://localhost:${port}`
+}
+
 export default function App() {
   const [active, setActive] = useState('overview')
 
@@ -53,8 +62,8 @@ export default function App() {
         {active === 'modelscores' && <ModelScores />}
         {active === 'alerts'      && <AlertWorkflow />}
         {active === 'powerbi'     && <PowerBIExport />}
-        {active === 'grafana'     && <EmbedView url="http://localhost:3000" title="Grafana Dashboards" />}
-        {active === 'airflow'     && <EmbedView url="http://localhost:8080" title="Airflow Pipelines" />}
+        {active === 'grafana'     && <EmbedView url={svcUrl(3000)} title="Grafana Dashboards" />}
+        {active === 'airflow'     && <EmbedView url={svcUrl(8080)} title="Airflow Pipelines" />}
         {active === 'tests'       && <TestResults />}
       </main>
     </div>

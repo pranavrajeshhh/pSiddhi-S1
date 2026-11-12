@@ -7,6 +7,15 @@ cd "$(dirname "$0")/.."
 mkdir -p logs
 sudo chmod -R a+rwX logs data models mlruns 2>/dev/null || chmod -R a+rwX logs data models mlruns
 
+# In Codespaces, services must advertise their public https URLs (not localhost),
+# otherwise Airflow/Grafana redirect to localhost after login.
+if [ -n "$CODESPACE_NAME" ]; then
+  D="${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
+  export AIRFLOW_BASE_URL="https://${CODESPACE_NAME}-8080.${D}"
+  export GRAFANA_ROOT_URL="https://${CODESPACE_NAME}-3000.${D}"
+  export COOKIE_SAMESITE=None GF_COOKIE_SAMESITE=none COOKIE_SECURE=True
+fi
+
 echo "Starting Docker services (Airflow, Postgres, Prometheus, Grafana, exporter)..."
 docker compose up -d --build
 

@@ -11,6 +11,11 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+    # Public URL (set by .devcontainer/start-demo.sh in Codespaces; localhost otherwise)
+    AIRFLOW__WEBSERVER__BASE_URL: ${AIRFLOW_BASE_URL:-http://localhost:8080}
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'True'
+    AIRFLOW__WEBSERVER__COOKIE_SAMESITE: ${COOKIE_SAMESITE:-Lax}
+    AIRFLOW__WEBSERVER__COOKIE_SECURE: ${COOKIE_SECURE:-False}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -88,6 +93,9 @@ services:
       GF_SECURITY_ALLOW_EMBEDDING: 'true'
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
+      GF_SECURITY_COOKIE_SAMESITE: ${GF_COOKIE_SAMESITE:-lax}
+      GF_SECURITY_COOKIE_SECURE: ${COOKIE_SECURE:-False}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
