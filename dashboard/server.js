@@ -9,6 +9,9 @@ import { readFileSync, existsSync } from 'fs'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DB_PATH = path.join(__dirname, '..', 'data', 'etl_metrics.db')
 const PROJECT_ROOT = path.join(__dirname, '..')
+// Prefer the project venv (Codespaces/Linux or Windows) so ML packages are found; fall back to system python.
+const VENV_PY = [path.join(PROJECT_ROOT, 'venv', 'bin', 'python'), path.join(PROJECT_ROOT, 'venv', 'Scripts', 'python.exe')].find(existsSync)
+const PY = VENV_PY ? `"${VENV_PY}"` : 'python'
 
 const app = express()
 app.use(cors())
@@ -86,7 +89,7 @@ app.get('/api/anomalies', (req, res) => {
 app.get('/api/explain', (req, res) => {
   try {
     const output = execSync(
-      'python ml/explain.py',
+      `${PY} ml/explain.py`,
       { cwd: PROJECT_ROOT, timeout: 60000, encoding: 'utf8' }
     )
     res.json({ success: true, output })
@@ -102,12 +105,12 @@ app.get('/api/scores', (req, res) => {
   }
   try {
     const output = execSync(
-      'python ml/score_all.py',
+      `${PY} ml/score_all.py`,
       { cwd: PROJECT_ROOT, timeout: 120000, encoding: 'utf8' }
     )
     scoresCache = JSON.parse(output)
     // Chain: explain → alert in background so dashboard updates automatically
-    const chain = spawn('python', ['-c',
+    const chain = spawn(VENV_PY || 'python', ['-c',
       'import sys; sys.path.insert(0,"."); from ml.explain import generate_explanations; generate_explanations(); from ml.alert import send_alerts; send_alerts(severity_filter="high")'
     ], { cwd: PROJECT_ROOT, stdio: 'ignore', detached: true })
     chain.unref()
@@ -164,7 +167,7 @@ app.get('/api/tests', (req, res) => {
   }
   try {
     const output = execSync(
-      `python -m pytest ${testTarget} -v --tb=short 2>&1`,
+      `${PY} -m pytest ${testTarget} -v --tb=short 2>&1`,
       { cwd: PROJECT_ROOT, timeout: 120000, encoding: 'utf8' }
     )
     res.json({ success: true, structured: parseTestOutput(output), output })
@@ -178,7 +181,7 @@ app.get('/api/tests', (req, res) => {
 app.post('/api/export/powerbi', (req, res) => {
   let output = ''
   try {
-    output = execSync('python ml/export_powerbi.py', { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf8' })
+    output = execSync(`${PY} ml/export_powerbi.py`, { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf8' })
   } catch (err) {
     output = err.stdout || err.message
   }
@@ -213,7 +216,7 @@ app.get('/api/alerts/high', (req, res) => {
 app.post('/api/alerts/run', (req, res) => {
   try {
     const output = execSync(
-      'python ml/alert.py',
+      `${PY} ml/alert.py`,
       { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf8' }
     )
     res.json({ success: true, output })

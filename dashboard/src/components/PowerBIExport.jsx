@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const API = 'http://localhost:3001'
+const API = ''
 
 const EXPORTS = [
   { file: 'anomaly_summary.csv',   label: 'Anomaly Summary',   desc: 'One row per anomaly — pipeline, stage, severity, IF score, AI explanation' },

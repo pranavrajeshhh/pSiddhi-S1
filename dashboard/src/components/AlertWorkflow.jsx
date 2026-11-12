@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API = 'http://localhost:3001'
+const API = ''
 
 const SEVERITY_COLOR = { high: '#DC2626', medium: '#D97706', low: '#16A34A' }
 
