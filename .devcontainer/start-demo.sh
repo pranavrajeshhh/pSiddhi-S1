@@ -3,6 +3,10 @@
 set -e
 cd "$(dirname "$0")/.."
 
+# Airflow runs as a non-root user inside Docker and must be able to write here.
+mkdir -p logs
+sudo chmod -R a+rwX logs data models mlruns 2>/dev/null || chmod -R a+rwX logs data models mlruns
+
 echo "Starting Docker services (Airflow, Postgres, Prometheus, Grafana, exporter)..."
 docker compose up -d --build
 
